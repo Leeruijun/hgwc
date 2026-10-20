@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霍格沃茨模拟器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="phone">
+        <div id="screen">
+            <!-- 1. 剧情页面 -->
+            <div id="page-story" class="page" style="display: block;">
+                <div class="top-bar">
+                    <div class="avatar-box" id="btn-open-profile" onclick="openProfile()">头像<br>加载中</div>
+                    <div class="info-grid">
+                        <div class="info-row">
+                            <div class="info-box" id="ui-top-name">姓名: 加载中...</div>
+                            <div class="info-box" id="ui-top-house">学院: 加载中...</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-box" id="ui-top-year">年级: 加载中...</div>
+                            <div class="info-box" id="ui-top-galleons" onclick="openGalleonsModal()" style="cursor: pointer;">加隆: 加载中...</div>
+                        </div>
+                    </div>
+                    <div class="save-box" id="btn-save-load" onclick="openSaveLoad()">存读档</div>
+                </div>
+                <div class="resource-row">
+                    <div class="res-box" id="ui-top-time">时间: 加载中...</div>
+                    <div class="res-box" style="padding: 0; border: none; background: transparent; display: flex;">
+                        <button id="btn-favorite-story" class="small-btn" onclick="favoriteCurrentStory()" style="width: 100%; height: 100%; padding: 8px; font-weight: bold; background: white; color: #666; border: 1px solid #d1d1d6; border-radius: 8px; margin: 0; font-size: 12px;">☆ 收藏剧情</button>
+                    </div>
+                </div>
+                <div class="main-story-text" id="ui-story-text" style="min-height: 250px; margin-bottom: 15px;">剧情文本加载中...</div>
+                <div class="event-section">
+                    <details>
+                        <summary class="section-header" style="cursor: pointer; outline: none;"><span>收藏剧情</span></summary>
+                        <div id="favorites-list-container" style="margin-top: 10px;"><div class="event-item history">暂无收藏记录</div></div>
+                    </details>
+                </div>
+                <div class="event-section">
+                    <details>
+                        <summary class="section-header" style="cursor: pointer; outline: none;"><span>往期剧情</span></summary>
+                        <div id="history-list-container" style="margin-top: 10px;"><div class="event-item history">暂无往期记录</div></div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- 2. 手机页面 -->
+            <div id="page-phone" class="page" style="display: none; padding: 0; position: relative;">
+                <div class="phone-wallpaper" id="phone-wallpaper"></div>
+                <div class="phone-top-bar">
+                    <div class="phone-time" id="phone-clock">00:00</div>
+                    <div class="phone-date" id="phone-date-display">加载中...</div>
+                </div>
+                <div class="phone-notifications">
+                    <div class="widget-card">
+                        <div class="widget-header"><span class="widget-icon" style="color: #34c759;">💬</span> 最新消息</div>
+                        <div class="widget-content" id="widget-contact-msg">暂无新消息</div>
+                    </div>
+                    <div class="widget-card">
+                        <div class="widget-header"><span class="widget-icon" style="color: #ff9500;">🏫</span> 校园墙</div>
+                        <div class="widget-content" id="widget-wall">暂无最新动态</div>
+                    </div>
+                    <div class="widget-card">
+                        <div class="widget-header"><span class="widget-icon" style="color: #5856d6;">💬</span> 霍格沃茨论坛</div>
+                        <div class="widget-content" id="widget-forum">暂无新帖子</div>
+                    </div>
+                </div>
+                <div class="app-dock">
+                    <div class="app-item" onclick="openContacts()"><div class="app-icon" style="background: linear-gradient(135deg, #34c759, #28cd41);">👥</div><div class="app-name">通讯录</div></div>
+                    <div class="app-item" onclick="openWall()"><div class="app-icon" style="background: linear-gradient(135deg, #ff9500, #ffcc00);">🏫</div><div class="app-name">校园墙</div></div>
+                    <div class="app-item" onclick="openForum()"><div class="app-icon" style="background: linear-gradient(135deg, #5856d6, #af52de);">💬</div><div class="app-name">论坛</div></div>
+                    <div class="app-item" onclick="openShop()"><div class="app-icon" style="background: linear-gradient(135deg, #007aff, #5ac8fa);">🛍️</div><div class="app-name">商店</div></div>
+                </div>
+
+                <!-- 通讯录全屏页面 -->
+                <div id="contacts-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 20; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #e0e0e0;">
+                        <div style="display: flex; align-items: center;"><button class="small-btn" onclick="closeContacts()" style="margin-right: 15px;">⬅️ 返回</button><h2 style="margin: 0; font-size: 18px;">通讯录</h2></div>
+                        <button class="small-btn" onclick="openCreateGroupModal()">👥 建群</button>
+                    </div>
+                    <div class="wall-tabs">
+                        <div class="wall-tab active" onclick="switchContactTab('characters', this)">人物</div>
+                        <div class="wall-tab" onclick="switchContactTab('chats', this)">聊天</div>
+                        <div class="wall-tab" onclick="switchContactTab('groups', this)">群聊</div>
+                        <div class="wall-tab" onclick="switchContactTab('moments', this)">朋友圈</div>
+                    </div>
+                    <div id="contact-list-container" style="flex: 1; overflow-y: auto; background: white;"></div>
+                </div>
+
+                <!-- 聊天详情页 -->
+                <div id="chat-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 22; flex-direction: column;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: white; border-bottom: 1px solid #eee;">
+                        <div style="display: flex; align-items: center;">
+                            <button class="small-btn" onclick="closeChat()" style="margin-right: 15px;">⬅️ 返回</button>
+                            <h2 id="chat-target-name" style="margin: 0; font-size: 16px;">聊天</h2>
+                        </div>
+                        <div style="display: flex;">
+                            <button id="btn-edit-group" class="small-btn" style="display: none;" onclick="openEditGroupModal()">✏️ 编辑</button>
+                        </div>
+                    </div>
+                    <div id="chat-history" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px;"></div>
+                    
+                    <!-- @成员选择列表 -->
+                    <div id="at-member-popup" style="display: none; position: absolute; bottom: 60px; left: 15px; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 100; width: 200px;">
+                        <div style="padding: 10px; font-size: 12px; color: #999; border-bottom: 1px solid #eee;">选择要 @ 的人</div>
+                        <div id="at-member-list"></div>
+                    </div>
+
+                    <div style="padding: 10px 15px; background: #f9f9f9; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center;">
+                        <button class="small-btn" id="btn-toggle-tools" onclick="toggleChatTools()" style="font-size: 18px; padding: 5px 10px;">➕</button>
+                        <input type="text" id="chat-input" placeholder="发消息..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none;">
+                        <button class="save-btn" style="padding: 0 20px; border-radius: 20px;" onclick="sendChatMessage()">发送</button>
+                    </div>
+                    <div id="chat-tools" style="display: none; background: white; padding: 15px; border-top: 1px solid #eee; justify-content: space-around;">
+                        <div style="text-align: center; cursor: pointer;" onclick="transferMoney()"><div style="font-size: 24px;">💸</div><div style="font-size: 12px;">转账</div></div>
+                        <div style="text-align: center; cursor: pointer;" onclick="sendGift()"><div style="font-size: 24px;">🎁</div><div style="font-size: 12px;">送礼物</div></div>
+                    </div>
+                </div>
+
+                <!-- 商店页面 -->
+                <div id="shop-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 20; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #e0e0e0;">
+                        <div style="display: flex; align-items: center;"><button class="small-btn" onclick="closeShop()" style="margin-right: 15px;">⬅️ 返回</button><h2 style="margin: 0; font-size: 18px;">霍格莫德</h2></div>
+                        <div id="shop-wallet" style="font-size: 14px; font-weight: bold; color: #d4af37;">💰 0</div>
+                    </div>
+                    <div class="shop-grid" id="shop-grid-container"></div>
+                </div>
+
+                <!-- 论坛页面 -->
+                <div id="forum-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 20; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #e0e0e0;">
+                        <div style="display: flex; align-items: center;"><button class="small-btn" onclick="closeForum()" style="margin-right: 15px;">⬅️ 返回</button><h2 style="margin: 0; font-size: 18px;">匿名论坛</h2></div>
+                        <div><button class="small-btn" style="color: #5856d6;" onclick="openCreatePostModal()">✏️ 发帖</button><button class="small-btn" onclick="refreshForum()">🔄 刷新</button></div>
+                    </div>
+                    <div class="forum-list" id="forum-list-container" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+                <div id="post-detail-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 21; flex-direction: column;">
+                    <div style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee;"><button class="small-btn" onclick="closePostDetail()" style="margin-right: 15px;">⬅️ 返回</button><h2 style="margin: 0; font-size: 16px;">帖子详情</h2></div>
+                    <div id="post-detail-content" style="flex: 1; overflow-y: auto; padding: 20px;"></div>
+                    <div style="padding: 15px; border-top: 1px solid #eee; background: #f9f9f9; display: flex; gap: 10px;">
+                        <input type="text" id="reply-input" placeholder="匿名回复..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none;">
+                        <button class="save-btn" style="padding: 0 20px; border-radius: 20px;" onclick="submitReply()">发送</button>
+                    </div>
+                </div>
+
+                <!-- 校园墙页面 -->
+                <div id="wall-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 20; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #e0e0e0;">
+                        <div style="display: flex; align-items: center;"><button class="small-btn" onclick="closeWall()" style="margin-right: 15px;">⬅️ 返回</button><h2 style="margin: 0; font-size: 18px;">校园墙</h2></div>
+                        <div><button class="small-btn" style="color: #ff9500;" onclick="openCreateWallModal()">✏️ 发墙</button><button class="small-btn" onclick="refreshWall()">🔄 刷新</button></div>
+                    </div>
+                    <div class="wall-tabs" id="wall-tabs-container">
+                        <div class="wall-tab active" onclick="switchWallTab('全部', this)">全部</div>
+                        <div class="wall-tab" onclick="switchWallTab('表白', this)">表白</div>
+                        <div class="wall-tab" onclick="switchWallTab('交友', this)">交友</div>
+                        <div class="wall-tab" onclick="switchWallTab('吐槽', this)">吐槽</div>
+                        <div class="wall-tab" onclick="switchWallTab('失物招领', this)">失物招领</div>
+                    </div>
+                    <div class="wall-list" id="wall-list-container" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
+                </div>
+                <div id="wall-detail-page" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 21; flex-direction: column;">
+                    <div style="display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee;"><button class="small-btn" onclick="closeWallDetail()" style="margin-right: 15px;">⬅️ 返回</button><h2 style="margin: 0; font-size: 16px;">动态详情</h2></div>
+                    <div id="wall-detail-content" style="flex: 1; overflow-y: auto; padding: 20px;"></div>
+                    <div style="padding: 15px; border-top: 1px solid #eee; background: #f9f9f9; display: flex; gap: 10px;">
+                        <input type="text" id="wall-reply-input" placeholder="评论..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none;">
+                        <button class="save-btn" style="padding: 0 20px; border-radius: 20px;" onclick="submitWallReply()">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 设置页面 -->
+            <div id="page-settings" class="page" style="display: none;">
+                <h1>系统设置</h1>
+                
+                <div class="event-section" style="margin-top: 20px;">
+                    <div class="section-header"><span>🧠 大模型 AI 接入</span></div>
+                    
+                    <div class="input-group" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <label style="margin: 0; font-size: 14px; color: #333; font-weight: bold;">启用 AI 自由生成</label>
+                        <input type="checkbox" id="ai-toggle" style="width: 20px; height: 20px; cursor: pointer;">
+                    </div>
+
+                    <div class="input-group">
+                        <label>API 接口地址 (URL)：</label>
+                        <input type="text" id="ai-api-url" placeholder="例如: https://api.deepseek.com/chat/completions">
+                    </div>
+
+                    <div class="input-group">
+                        <label>API Key：</label>
+                        <input type="password" id="ai-api-key" placeholder="sk-xxxxxxxxxxxxxxxx">
+                    </div>
+
+                    <div class="input-group">
+                        <label>模型名称 (Model)：</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="ai-model-name" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 8px; outline: none; background-color: #f9f9f9;">
+                                <option value="">请先获取模型列表或手动输入</option>
+                            </select>
+                            <button class="small-btn" onclick="fetchModelList()" style="white-space: nowrap;">🔄 获取列表</button>
+                        </div>
+                        <input type="text" id="ai-model-name-manual" placeholder="如果无法获取，请在这里手动输入" style="margin-top: 5px; display: none;">
+                    </div>
+
+                    <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label>单次对话最高预算 (Token)：</label>
+                            <input type="number" id="ai-max-cost" placeholder="例如 50000" min="0">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label>累计已消耗 (Token)：</label>
+                            <div style="padding: 8px; border: 1px solid #ccc; border-radius: 8px; background: #e5e5ea; color: #666; font-weight: bold; text-align: center;" id="ai-total-cost-display">
+                                0
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 字数偏好设置 -->
+                    <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <div class="section-header"><span>📝 字数偏好设置</span></div>
+                        
+                        <div class="input-row">
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>主剧情最少字数：</label>
+                                <input type="number" id="ai-story-min-len" value="100" min="50">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>主剧情最多字数：</label>
+                                <input type="number" id="ai-story-max-len" value="300" min="100">
+                            </div>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>单聊回复最多字数：</label>
+                                <input type="number" id="ai-chat-len" value="30" min="10">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>群聊单人回复最多字数：</label>
+                                <input type="number" id="ai-group-len" value="30" min="10">
+                            </div>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>朋友圈发帖最多字数：</label>
+                                <input type="number" id="ai-moment-len" value="50" min="10">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>朋友圈回复最多字数：</label>
+                                <input type="number" id="ai-moment-reply-len" value="50" min="10">
+                            </div>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>论坛/校园墙发帖最多字数：</label>
+                                <input type="number" id="ai-forum-len" value="100" min="10">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>论坛/校园墙回复最多字数：</label>
+                                <input type="number" id="ai-forum-reply-len" value="100" min="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="save-btn" style="width: 100%; margin-top: 20px; padding: 12px; border-radius: 8px;" onclick="saveAISettings()">保存 AI 设置</button>
+                </div>
+
+                <div class="event-section" style="margin-top: 20px;">
+                    <div class="section-header"><span>✨ 角色管理</span></div>
+                    <button class="save-btn" style="width: 100%; padding: 12px; border-radius: 8px; background-color: #34c759; color: white; margin-bottom: 15px;" onclick="startNewGame()">开启全新人生 (新建角色)</button>
+                </div>
+                
+                <div class="event-section" style="margin-top: 10px; border-color: #ffcccc;">
+                    <div class="section-header" style="color: #ff3b30;"><span>⚠️ 危险操作</span></div>
+                    <button class="save-btn" style="width: 100%; padding: 12px; border-radius: 8px; background-color: #ff3b30; color: white;" onclick="resetGame()">清空所有数据并重新开始</button>
+                </div>
+
+                <div class="event-section" style="margin-top: 30px; text-align: center; color: #999;">
+                    <p style="font-size: 14px; font-weight: bold;">霍格沃茨模拟器</p>
+                    <p style="font-size: 12px; margin-top: 5px;">Version 1.0.0 (AI 接入版)</p>
+                    <p style="font-size: 12px; margin-top: 5px;">自制同人游戏 · 仅供个人娱乐</p>
+                </div>
+            </div>
+
+            <button id="advance-btn" class="btn-primary" onclick="openAdvanceModal()">推进剧情</button>
+
+            <!-- 底部导航栏 -->
+            <div id="bottom-nav">
+                <div class="nav-item active" onclick="switchPage('story', this)">📖 剧情</div>
+                <div class="nav-item" onclick="switchPage('phone', this)">📱 手机</div>
+                <div class="nav-item" onclick="switchPage('settings', this)">⚙️ 设置</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 所有弹窗 ================= -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>角色信息</h2>
+            <div class="input-row">
+                <div class="input-group"><label>姓名 (必填)：</label><input type="text" id="input-name" placeholder="输入名字"></div>
+                <div class="input-group"><label>上传头像：</label><input type="file" id="input-avatar-file" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)"><button type="button" class="small-btn" onclick="document.getElementById('input-avatar-file').click()" style="width: 100%; height: 33px; font-size: 12px;">选择图片</button></div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>性别：</label><select id="input-gender"><option value="男">男</option><option value="女">女</option></select></div>
+                <div class="input-group"><label>性取向：</label><select id="input-orientation"><option value="异性恋">异性恋</option><option value="同性恋">同性恋</option><option value="双性恋">双性恋</option></select></div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>学院：</label><select id="input-house"><option value="斯莱特林">斯莱特林</option><option value="格兰芬多">格兰芬多</option><option value="拉文克劳">拉文克劳</option><option value="赫奇帕奇">赫奇帕奇</option></select></div>
+                <div class="input-group"><label>血统：</label><select id="input-blood"><option value="纯血">纯血</option><option value="混血">混血</option><option value="麻瓜出身">麻瓜出身</option></select></div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>年级：</label><select id="input-year"><option value="一年级">一年级</option><option value="二年级">二年级</option><option value="三年级">三年级</option><option value="四年级" selected>四年级</option><option value="五年级">五年级</option><option value="六年级">六年级</option><option value="七年级">七年级</option><option value="已毕业">已毕业</option></select></div>
+                <div class="input-group"><label>国籍：</label><select id="input-nationality"><option value="英国">英国</option><option value="爱尔兰">爱尔兰</option><option value="法国">法国</option><option value="其他国家">其他国家</option></select></div>
+            </div>
+            <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;"><p style="font-size: 12px; color: #888; margin-bottom: 10px;">以下为选填自设</p>
+            <div class="input-group"><label>自设 1：</label><textarea id="input-custom1" maxlength="500"></textarea></div>
+            <div class="input-group"><label>自设 2：</label><textarea id="input-custom2" maxlength="500"></textarea></div>
+            <div class="input-group"><label>自设 3：</label><textarea id="input-custom3" maxlength="500"></textarea></div>
+            <div class="input-group"><label>自设 4：</label><textarea id="input-custom4" maxlength="500"></textarea></div>
+            <div class="input-group"><label>自设 5：</label><textarea id="input-custom5" maxlength="500"></textarea></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeProfile()">取消</button><button class="save-btn" onclick="saveProfile()">保存修改</button></div>
+        </div>
+    </div>
+    <div id="saveload-modal" class="modal">
+        <div class="modal-content">
+            <h2>存读档</h2>
+            <div class="save-slots">
+                <div class="slot-card"><div class="slot-info"><h3>存档位 1</h3><p id="slot-desc-0">空存档</p></div><div class="slot-actions"><button class="small-btn" onclick="saveGame(0)">保存</button><button class="small-btn" onclick="loadGame(0)">读取</button><button class="small-btn" onclick="deleteSave(0)" style="color: red; border-color: #ffcccc;">删除</button></div></div>
+                <div class="slot-card"><div class="slot-info"><h3>存档位 2</h3><p id="slot-desc-1">空存档</p></div><div class="slot-actions"><button class="small-btn" onclick="saveGame(1)">保存</button><button class="small-btn" onclick="loadGame(1)">读取</button><button class="small-btn" onclick="deleteSave(1)" style="color: red; border-color: #ffcccc;">删除</button></div></div>
+                <div class="slot-card"><div class="slot-info"><h3>存档位 3</h3><p id="slot-desc-2">空存档</p></div><div class="slot-actions"><button class="small-btn" onclick="saveGame(2)">保存</button><button class="small-btn" onclick="loadGame(2)">读取</button><button class="small-btn" onclick="deleteSave(2)" style="color: red; border-color: #ffcccc;">删除</button></div></div>
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 10px;"><button class="small-btn" style="flex: 1;" onclick="exportData()">导出数据</button><button class="small-btn" style="flex: 1;" onclick="importData()">导入数据</button></div>
+            <div style="margin-top: 10px; display: flex;"><button class="cancel-btn" style="flex: 1; margin-right: 0;" onclick="closeSaveLoad()">返回游戏</button></div>
+        </div>
+    </div>
+    <div id="galleons-modal" class="modal">
+        <div class="modal-content" style="width: 70%;">
+            <h2>修改加隆</h2>
+            <div class="input-group"><label>当前加隆数量（上限 9,999,999）：</label><input type="number" id="input-galleons" max="9999999" min="0" placeholder="输入金额"></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeGalleonsModal()">取消</button><button class="save-btn" onclick="saveGalleons()">确定</button></div>
+        </div>
+    </div>
+    <div id="advance-modal" class="modal">
+        <div class="modal-content">
+            <h2>推进剧情</h2>
+            <div class="input-group"><label>推进跨度：</label><select id="input-advance-type" onchange="toggleAdvanceInputs()"><option value="day">按日推进</option><option value="month">按月推进</option><option value="custom">指定日期推进</option></select></div>
+            <div class="input-row" id="custom-date-inputs" style="display: none;"><div class="input-group"><label>推进到几月：</label><input type="number" id="input-target-month" min="1" max="12"></div><div class="input-group"><label>推进到几日：</label><input type="number" id="input-target-day" min="1" max="7"></div></div>
+            <div class="input-group"><label>关联人物 (可多选)：</label><div id="advance-npc-display" onclick="openNpcSelectModal()" style="min-height: 36px; padding: 8px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; cursor: pointer; font-size: 14px; display: flex; flex-wrap: wrap; gap: 5px;"><span style="color: #999;">点击选择人物...</span></div><input type="hidden" id="advance-npc" value=""></div>
+            <div class="input-group"><label>自设剧情（选填）：</label><textarea id="input-custom-story" maxlength="500" placeholder="例如：我想去图书馆..."></textarea></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeAdvanceModal()">取消</button><button class="save-btn" onclick="confirmAdvance()">确认推进</button></div>
+        </div>
+    </div>
+    <div id="npc-select-modal" class="modal" style="z-index: 200;">
+        <div class="modal-content" style="width: 75%;">
+            <h2>选择关联人物</h2>
+            <div id="npc-checkbox-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow-y: auto; margin-bottom: 20px;"></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeNpcSelectModal()">取消</button><button class="save-btn" onclick="confirmNpcSelect()">确定</button></div>
+        </div>
+    </div>
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="history-modal-title">往期剧情</h2>
+            <div id="history-detail-text" style="font-size: 14px; line-height: 1.6; color: #333; white-space: pre-wrap; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div>
+            <div class="modal-btns" style="margin-top: 20px;"><button class="cancel-btn" style="flex: 1; margin-right: 0;" onclick="document.getElementById('history-modal').style.display='none'">关闭</button></div>
+        </div>
+    </div>
+    <div id="buy-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 75%;">
+            <h2>购买确认</h2>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <div id="buy-item-icon" style="font-size: 48px; margin-bottom: 10px;">🪄</div>
+                <div id="buy-item-name" style="font-size: 16px; font-weight: bold;">商品名称</div>
+                <div id="buy-item-price" style="font-size: 14px; color: #d4af37; margin-top: 5px;">单价: 0 加隆</div>
+            </div>
+            <div class="input-group"><label>购买数量：</label><input type="number" id="input-buy-qty" value="1" min="1" max="99"></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeBuyModal()">取消</button><button class="save-btn" onclick="confirmBuy()">确认购买</button></div>
+        </div>
+    </div>
+    <div id="create-post-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 85%;">
+            <h2>发布新帖子</h2>
+            <div class="input-group"><label>你的匿名马甲：</label><input type="text" id="input-post-anon" value="匿名巫师" maxlength="20"></div>
+            <div class="input-group"><label>帖子标题：</label><input type="text" id="input-post-title" placeholder="惊爆！今天在走廊看到..." maxlength="30"></div>
+            <div class="input-group"><label>内容：</label><textarea id="input-post-content" placeholder="分享你的八卦..." maxlength="500" style="height: 100px;"></textarea></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeCreatePostModal()">取消</button><button class="save-btn" onclick="submitPost()">发布</button></div>
+        </div>
+    </div>
+    <div id="create-wall-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 85%;">
+            <h2>发布新动态</h2>
+            <div class="input-group"><label>选择分区：</label><select id="input-wall-category"><option value="表白">❤️ 表白</option><option value="交友">🤝 交友</option><option value="吐槽">📝 吐槽</option><option value="失物招领">🙋‍♂️ 失物招领</option></select></div>
+            <div class="input-group"><label>内容 (实名发布)：</label><textarea id="input-wall-content" placeholder="说点什么吧..." maxlength="200" style="height: 100px;"></textarea></div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeCreateWallModal()">取消</button><button class="save-btn" onclick="submitWallPost()">发布</button></div>
+        </div>
+    </div>
+    <div id="chat-action-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 80%;">
+            <h2 id="chat-action-title">转账</h2>
+            
+            <div class="input-group" id="group-target-select-group" style="display: none;">
+                <label>选择接收人：</label>
+                <select id="select-group-target" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;"></select>
+            </div>
+
+            <div id="transfer-inputs" style="display: none;">
+                <div class="input-group"><label>转账金额 (加隆)：</label><input type="number" id="input-transfer-amount" min="1" placeholder="输入数量"></div>
+                <div class="input-group"><label>转账备注：</label><input type="text" id="input-transfer-note" placeholder="买点好吃的" maxlength="20"></div>
+            </div>
+            <div class="input-group" id="gift-inputs" style="display: none;">
+                <label>选择要送的礼物：</label>
+                <select id="select-chat-gift"></select>
+            </div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeChatAction()">取消</button><button class="save-btn" onclick="confirmChatAction()">确认</button></div>
+        </div>
+    </div>
+    
+    <!-- 创建群聊弹窗 -->
+    <div id="create-group-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 85%;">
+            <h2>创建群聊</h2>
+            <div class="input-group">
+                <label>群聊名称：</label>
+                <input type="text" id="input-group-name" placeholder="例如：斯莱特林小分队" maxlength="20">
+            </div>
+            <div class="input-group">
+                <label>选择群成员：</label>
+                <div id="group-member-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 10px; background: #f9f9f9;"></div>
+            </div>
+            <div class="modal-btns">
+                <button class="cancel-btn" onclick="document.getElementById('create-group-modal').style.display='none'">取消</button>
+                <button class="save-btn" onclick="submitCreateGroup()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑群聊弹窗 -->
+    <div id="edit-group-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 90%;">
+            <h2>编辑群聊</h2>
+            <div class="input-group">
+                <label>群聊名称：</label>
+                <input type="text" id="edit-group-name" placeholder="输入群名称" maxlength="20">
+            </div>
+            <div class="input-group">
+                <label>群成员：</label>
+                <div id="edit-group-member-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 10px; background: #f9f9f9;"></div>
+            </div>
+            
+            <!-- 弹窗底部按钮区 -->
+            <div style="margin-top: 20px;">
+                <!-- 第一排：取消和保存 -->
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button class="cancel-btn" style="flex: 1; margin-right: 0;" onclick="closeEditGroupModal()">取消</button>
+                    <button class="save-btn" style="flex: 1;" onclick="saveEditedGroup()">保存修改</button>
+                </div>
+                <!-- 第二排：解散群聊（独占一行） -->
+                <button class="cancel-btn" style="width: 100%; color: #ff3b30; border-color: #ffcccc;" onclick="deleteGroup()">🗑️ 解散群聊</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-moment-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 85%;">
+            <h2>发布朋友圈</h2>
+            <div class="input-group">
+                <label>内容：</label>
+                <textarea id="input-moment-content" placeholder="分享你的魔法生活..." maxlength="200" style="height: 100px;"></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="cancel-btn" onclick="document.getElementById('create-moment-modal').style.display='none'">取消</button>
+                <button class="save-btn" onclick="submitMoment()">发布</button>
+            </div>
+        </div>
+    </div>
+    <div id="moment-comment-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content" style="width: 80%;">
+            <h2>发表评论</h2>
+            <div class="input-group">
+                <label>评论内容：</label>
+                <textarea id="input-moment-comment" placeholder="说点什么吧..." maxlength="100" style="height: 80px;"></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="cancel-btn" onclick="closeMomentCommentModal()">取消</button>
+                <button class="save-btn" onclick="submitMomentComment()">发送</button>
+            </div>
+        </div>
+    </div>
+    <div id="npc-profile-modal" class="modal" style="z-index: 300;">
+        <div class="modal-content">
+            <h2>人物档案</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>姓名：</label>
+                    <input type="text" id="npc-input-name" placeholder="输入姓名" style="background: #f9f9f9; color: #333;">
+                </div>
+                <div class="input-group">
+                    <label>修改头像：</label>
+                    <input type="file" id="npc-avatar-file" accept="image/*" style="display: none;" onchange="handleNpcAvatarUpload(event)">
+                    <div id="npc-avatar-preview" onclick="document.getElementById('npc-avatar-file').click()" style="width: 100%; height: 33px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; overflow: hidden;"></div>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>性别：</label>
+                    <select id="npc-input-gender"><option value="男">男</option><option value="女">女</option><option value="其他">其他</option></select>
+                </div>
+                <div class="input-group">
+                    <label>学院：</label>
+                    <select id="npc-input-house"><option value="格兰芬多">格兰芬多</option><option value="斯莱特林">斯莱特林</option><option value="拉文克劳">拉文克劳</option><option value="赫奇帕奇">赫奇帕奇</option><option value="其他">其他</option></select>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>年级：</label>
+                    <select id="npc-input-year"><option value="一年级">一年级</option><option value="二年级">二年级</option><option value="三年级">三年级</option><option value="四年级">四年级</option><option value="五年级">五年级</option><option value="六年级">六年级</option><option value="七年级">七年级</option><option value="已毕业">已毕业</option></select>
+                </div>
+            </div>
+            <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
+            <div class="input-group">
+                <label>角色设定 (核心性格/背景)：</label>
+                <textarea id="npc-input-persona" maxlength="500" placeholder="例如：学霸、爱说教、极其遵守规则，偶尔会展现出温柔的一面..." style="height: 80px;"></textarea>
+            </div>
+            <div class="input-group"><label>对你的印象评价：</label><textarea id="npc-input-impression" maxlength="50" style="height: 60px;"></textarea></div>
+            <div class="input-row">
+                <div class="input-group"><label>好感度 (0-100)：</label><input type="number" id="npc-input-affinity" min="0" max="100"></div>
+                <div class="input-group"><label>爱慕值 (0-100)：</label><input type="number" id="npc-input-love" min="0" max="100"></div>
+                <div class="input-group"><label>厌恶值 (0-100)：</label><input type="number" id="npc-input-dislike" min="0" max="100"></div>
+            </div>
+            <div class="modal-btns"><button class="cancel-btn" onclick="closeNpcProfile()">取消</button><button class="save-btn" onclick="saveNpcProfile()">保存修改</button></div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
