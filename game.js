@@ -1,11 +1,11 @@
 let player = {
     name: "加载中...", gender: "男", orientation: "异性恋", house: "加载中...", blood: "纯血",
     year: "加载中...", nationality: "英国", 
-    custom1: "故事主角，华裔老牌纯血世家子弟。外貌：183cm，薄肌，少年时清瘦、成年后肩宽骨架舒展；深黑微卷带冷棕调黑发，额前碎发打理整齐，狭长深棕眼，冷白皮。外表清冷，情绪波动时眼底锋芒毕露，气质矜贵克制，穿搭偏爱深绿、炭黑、银灰简约巫师袍，随身佩戴蚀刻黎家纹样的哑光银袖扣、素银戒指，低调内敛。", 
-    custom2: "性格：清冷疏离，骨子里骄傲敏感，重情且富有正义感，胜负欲强。理性缜密，承压能力出众；亲密关系有短板，习惯自作主张，自尊心强、容易口是心非，只对少数亲友卸下防备。专一长情，共情力强，会将脆弱一面仅展示给爱人，后期学会换位思考与沟通，向往安稳平淡的陪伴。", 
-    custom3: "家庭：黎家势力神秘，家族实权由母亲掌控，父母尊重他的选择。黎家与张家世代交好，青梅秋・张，如同姐姐，能点醒他的感情困惑。宠物是束带黑蛇诺尔，对黑魔法气息敏感。魔杖为 12.5 英寸黑胡桃木龙心弦，洞察力强、爆发力佳。守护神是银灰苍鹰，心结解开后方能稳定成型，后期可与帕比的林鸫守护神相伴。", 
-    custom4: "核心亮点：拥有顶尖家族势力、顶尖外貌与人气、顶尖魔法天赋，魔药、古代魔法、决斗能力出众；不排斥合理使用家族特权，但拒绝活在家族光环之下，一心想要凭自身能力证明自己。", 
-    custom5: "世界观：一年级新生入学年龄为 14 周岁，每学年分为秋季学期、春季学期秋季学期：9月1日开学；持续至次年2月，开启寒假。春季学期：3月返校开学；至7月放暑假。 循环往复，一共七个学年。霍格沃茨依旧招收来自各地的巫师学生，纯血、混血、麻瓜出身共存；纯血世家圈子偏见依旧存在，有派系、社交隔阂，但不存在以纯血至上为核心的黑魔王势力。 魔法世界的危机来源分散：非法神奇动物盗猎集团、私研黑魔法的独行巫师、被诅咒的魔法器物走私、古老家族遗留诅咒等，魔法部魔法法律执行司负责追查这类案件，对应林恩毕业后的岗位。 三强争霸赛、学院魁地奇杯、圣诞舞会等传统活动照常举办，作为校园重要事件，不受黑魔王相关剧情束缚。 四大学院特质不变，学院之间有竞争、也有跨学院友谊，校内流言、派系抱团、学生间的情愫与人际纠葛照常发生。",
+    custom1: "故事主角，华裔老牌纯血世家子弟。外貌清冷矜贵，183cm薄肌，深黑微卷发，深棕眼，冷白皮。喜穿深绿、炭黑、银灰简约巫师袍，随身佩戴黎家纹样的银袖扣与素银戒指。", 
+    custom2: "性格清冷疏离，骄傲敏感，重情正义，胜负欲强。习惯自作主张、口是心非，只对少数亲友卸下防备。专一长情，向往安稳平淡的陪伴。", 
+    custom3: "黎家势力神秘，实权由母亲掌控，父母尊重他。与张家世代交好，青梅竹马秋·张如姐姐般能点醒他。宠物是黑蛇蟹问，习惯盘绕在他手腕小臂。魔杖为12.5英寸黑胡桃木龙心弦。守护神为银灰苍鹰（后期可与帕比的林鸫相伴）。", 
+    custom4: "拥有顶尖家族势力、外貌与魔法天赋（魔药、古代魔法、决斗出众）。不排斥合理使用家族特权，但一心想要凭自身能力证明自己。", 
+    custom5: "世界观：14岁入学，一学年分秋季（9-2月）与春季（3-7月）学期。纯血偏见存在但无黑魔王势力。危机多为神奇动物盗猎、私研黑魔法等，由魔法部法律执行司查处。三强争霸赛等传统活动照常举办。",
     avatarEmoji: "🐍", avatarImg: "image/lynn.jpg", time: "加载中...", month: 8, week: 4, day: 28,
     location: "加载中...", galleons: "加载中...", inventory: [], 
     aiEnabled: false, aiApiUrl: "", aiApiKey: "", aiModelName: "", aiMaxCost: 100, aiTotalCost: 0, aiCallCount: 0,
@@ -114,13 +114,19 @@ function aiRequest(url, body, onSuccess, onError) {
     let apiUrl = url;
     if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { if (apiUrl.endsWith('/v1')) apiUrl += '/chat/completions'; else apiUrl += '/chat/completions'; }
 
+    // 🛠️ 新增：创建一个中止控制器，设置 60 秒超时
+    const controller = new AbortController();
+    const timeoutAbortId = setTimeout(() => controller.abort(), 60000);
+
     fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${player.aiApiKey}` },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal // 👈 把控制器信号绑给 fetch
     })
     .then(res => res.json())
     .then(data => {
+        clearTimeout(timeoutAbortId); // 👈 必须加：只要成功返回，就立刻销毁 60 秒的警报
         if (data.usage && data.usage.total_tokens) {
             player.aiTotalCost += data.usage.total_tokens;
             let cd = document.getElementById('ai-total-cost-display');
@@ -128,7 +134,10 @@ function aiRequest(url, body, onSuccess, onError) {
         }
         if (onSuccess) onSuccess(data);
     })
-    .catch(err => { if (onError) onError(err); });
+    .catch(err => { 
+        clearTimeout(timeoutAbortId); // 👈 必须加：报错了也要销毁警报
+        if (onError) onError(err); 
+    });
 }
 
 function autoSave() {
@@ -817,11 +826,6 @@ ${atLine}
             let tempMsg = { sender: 'other', text: "（正在思考...）" };
             currentChatTarget.chats.push(tempMsg); renderChatHistory();
 
-            let timeoutId = setTimeout(() => {
-                let idx = currentChatTarget.chats.indexOf(tempMsg);
-                if (idx !== -1) { currentChatTarget.chats.splice(idx, 1); currentChatTarget.chats.push({ sender: 'other', text: "【系统提示：网络连接超时。】" }); renderChatHistory(); }
-            }, 15000);
-
             let npc = currentChatTarget;
             let recentStoryMemory = "";
             if (pastStories.length > 0) { 
@@ -869,7 +873,6 @@ ${recentChatMemory || '暂无聊天记录。'}
             aiRequest(player.aiApiUrl, {
                 model: player.aiModelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: text }], temperature: 0.7
             }, function(data) {
-                clearTimeout(timeoutId);
                 let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
                 let aiReply = data.choices[0].message.content;
                 
@@ -895,8 +898,14 @@ ${recentChatMemory || '暂无聊天记录。'}
                 currentChatTarget.chats.push({ sender: 'other', text: aiReply, affinityChange: affinityChange, innerThought: innerThought });
                 renderChatHistory(); autoSave();
             }, function(error) {
-                clearTimeout(timeoutId); let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
-                currentChatTarget.chats.push({ sender: 'other', text: `【AI连接失败】原因：${error.message}` }); renderChatHistory(); autoSave();
+                let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
+                // 🛠️ 判断是不是因为我们设的 60 秒超时掐断的
+                if (error.name === 'AbortError' || error.message.includes('abort')) {
+                    currentChatTarget.chats.push({ sender: 'system', text: "【系统提示：等待超过 60 秒，本次请求已自动结束。请重新发送消息。】" }); 
+                } else {
+                    currentChatTarget.chats.push({ sender: 'other', text: `【AI连接失败】原因：${error.message}` }); 
+                }
+                renderChatHistory(); autoSave();
             });
         } else {
             setTimeout(() => { currentChatTarget.chats.push({ sender: 'other', text: "【未连接 AI：当前为单机模式】" }); renderChatHistory(); autoSave(); }, 1000); 
