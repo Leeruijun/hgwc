@@ -1438,3 +1438,18 @@ document.addEventListener('click', function(e) {
         popup.style.display = 'none';
     }
 });
+// iOS 键盘弹出监听：隐藏底部元素，防止误触与页面跳动
+(function watchKeyboard() {
+    if (!window.visualViewport) return;
+    let lastOpen = false;
+    function check() {
+        let open = window.visualViewport.height < window.innerHeight - 150;
+        if (open !== lastOpen) {
+            lastOpen = open;
+            document.body.classList.toggle('keyboard-open', open);
+        }
+    }
+    window.visualViewport.addEventListener('resize', check);
+    window.visualViewport.addEventListener('scroll', check);
+    check();
+})();
