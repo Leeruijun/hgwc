@@ -1444,7 +1444,8 @@ document.addEventListener('click', function(e) {
     if (!window.visualViewport) return;
     let lastOpen = false;
     function check() {
-        let open = window.visualViewport.height < window.innerHeight - 150;
+        // 只要可视区域高度小于初始屏幕高度的 75%，就认为键盘弹出了
+        let open = window.visualViewport.height < window.innerHeight * 0.75;
         if (open !== lastOpen) {
             lastOpen = open;
             document.body.classList.toggle('keyboard-open', open);
@@ -1455,11 +1456,20 @@ document.addEventListener('click', function(e) {
     check();
 })();
 
-// 🛠️ 修复：输入框聚焦时，平滑滚动到可视区域，防止被键盘遮挡
+// 🛠️ 终极防遮挡修复：输入框聚焦时，直接把聊天记录滚到底部
 document.addEventListener('focusin', function(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-        setTimeout(() => {
-            e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }, 300); // 延迟300ms等键盘完全弹出后再滚动
+        // 针对聊天页面的特殊处理
+        if (e.target.id === 'chat-input') {
+            let chatHistory = document.getElementById('chat-history');
+            if (chatHistory) {
+                setTimeout(() => { chatHistory.scrollTop = chatHistory.scrollHeight; }, 100);
+            }
+        } else {
+            // 针对其他弹窗输入框（比如自设、发帖）
+            setTimeout(() => {
+                e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }, 300);
+        }
     }
 });
