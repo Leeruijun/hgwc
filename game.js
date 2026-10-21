@@ -1454,3 +1454,12 @@ document.addEventListener('click', function(e) {
     window.visualViewport.addEventListener('scroll', check);
     check();
 })();
+
+// 🛠️ 修复：输入框聚焦时，平滑滚动到可视区域，防止被键盘遮挡
+document.addEventListener('focusin', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        setTimeout(() => {
+            e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 300); // 延迟300ms等键盘完全弹出后再滚动
+    }
+});
