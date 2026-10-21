@@ -264,3 +264,7 @@ body.keyboard-open #bottom-nav,
 body.keyboard-open #advance-btn {
     display: none !important;
 }
+/* 强制聊天记录区最小高度，防止被键盘挤到0 */
+#chat-history {
+    min-height: 200px !important;
+}
