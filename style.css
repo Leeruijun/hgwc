@@ -26,7 +26,6 @@ body {
     color: #1c1c1e;
     position: relative; 
     padding-top: 20px; 
-    overflow: hidden; /* 强制锁死，绝对不允许外层被顶上去 */
 }
 
 /* =========================================
@@ -269,23 +268,24 @@ body.keyboard-open #advance-btn {
 #chat-history {
     min-height: 200px !important;
 }
-/* 🛠️ 终极修复 iOS 键盘顶飞问题 */
-#page-phone {
-    position: absolute !important;
-    top: 20px; bottom: 60px; left: 0; right: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
+/* =========================================
+   终极 iOS 键盘修复方案
+   ========================================= */
+
+/* 让整个聊天页面（绝对定位）能够自适应高度 */
 #chat-page {
-    position: absolute !important;
-    top: 0; bottom: 0; left: 0; right: 0;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
+
+/* 聊天记录区：允许被键盘压缩，绝不撑破页面 */
 #chat-history {
-    flex: 1 !important;
-    min-height: 0 !important; /* 允许它被键盘压缩，而不是撑破页面 */
+    flex: 1 1 0% !important; 
+    min-height: 0 !important; 
     overflow-y: auto;
+}
+
+/* 输入框和工具栏：固定高度，绝不被压缩 */
+#chat-page > div:not(#chat-history):not(#at-member-popup) {
+    flex-shrink: 0;
 }
