@@ -3,7 +3,7 @@ let player = {
     year: "加载中...", nationality: "英国", custom1: "", custom2: "", custom3: "", custom4: "", custom5: "",
     avatarEmoji: "🐍", avatarImg: "image/lynn.jpg", time: "加载中...", month: 8, week: 4, day: 28,
     location: "加载中...", galleons: "加载中...", inventory: [], 
-    aiEnabled: false, aiApiUrl: "", aiApiKey: "", aiModelName: "", aiMaxCost: 50000, aiTotalCost: 0,
+    aiEnabled: false, aiApiUrl: "", aiApiKey: "", aiModelName: "", aiMaxCost: 100, aiTotalCost: 0, aiCallCount: 0,
     aiStoryMinLen: 100, aiStoryMaxLen: 300, 
     aiChatLen: 30, aiGroupLen: 30, 
     aiMomentLen: 50, aiMomentReplyLen: 50, 
@@ -18,33 +18,33 @@ let currentGeneratedStory = "";
 // 核心数据区
 // =========================================
 let contactsData = [
-    { id: "theodore", name: "西奥多·诺特", avatar: "🐍", avatarImg: "image/theodore.png", house: "斯莱特林", gender: "男", year: "一年级", persona: "斯莱特林纯血，天资卓绝，魔药造诣顶尖。性格寡言孤僻，厌恶纯血圈子虚伪的抱团客套，不参与马尔福一伙的挑衅闹剧，习惯冷眼旁观周遭纷争。对外人冷淡疏离，心思细腻敏锐，能读懂旁人隐藏的情绪，行事低调，遇到认可之人陷入困境时会主动出手相助。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "draco", name: "德拉科·马尔福", avatar: "🐍", avatarImg: "image/draco.png", house: "斯莱特林", gender: "男", year: "一年级", persona: "傲慢的纯血贵族，自带与生俱来的优越感。信奉纯血理念，热衷组建小团体，胜负欲极强，习惯带着跟班用尖刻言语讥讽他人，处处想要压过对手，执着于维系纯血圈层地位，无法接受同圈层之人脱离派系，屡次主动招揽心仪的强者加入自己的团体。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "flint", name: "马库斯·弗林特", avatar: "🐍", avatarImg: "image/marcus.png", house: "斯莱特林", gender: "男", year: "三年级", persona: "斯莱特林魁地奇队长，性格粗犷好胜，极度看重魁地奇赛场胜负。判断他人只看实力高低，不在意学院派系纷争。欣赏球场上实力出众的队员，愿意偏袒有能力的队友，会主动出面制止队内无端的流言非议，一心追求队伍胜利。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "pansy_p", name: "潘西·帕金森", avatar: "🐍", avatarImg: "image/pansy.png", house: "斯莱特林", gender: "女", year: "一年级", persona: "纯血出身，依附马尔福小团体，平日势利刻薄，习惯跟着同伴嘲讽旁人。性格傲娇口是心非，内心爱慕强者却绝不会主动表露心意，只会旁敲侧击暗示期待。好胜心强，见不得他人直白追求心仪对象，常与直球示好的女孩当众争执，还会嘲讽被动怯懦的同龄人。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "theodore", name: "西奥多·诺特", avatar: "🐍", avatarImg: "image/theodore.png", house: "斯莱特林", gender: "男", year: "一年级", persona: "斯莱特林纯血，天资卓绝，魔药造诣顶尖。性格寡言孤僻，厌恶纯血圈子虚伪的抱团客套，不参与马尔福一伙的挑衅闹剧，习惯冷眼旁观周遭纷争。对外人冷淡疏离，心思细腻敏锐，能读懂旁人隐藏的情绪，行事低调，遇到认可之人陷入困境时会主动出手相助。", impression: "唯一能说上话的挚友", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "draco", name: "德拉科·马尔福", avatar: "🐍", avatarImg: "image/draco.png", house: "斯莱特林", gender: "男", year: "一年级", persona: "傲慢的纯血贵族，自带与生俱来的优越感。信奉纯血理念，热衷组建小团体，胜负欲极强，习惯带着跟班用尖刻言语讥讽他人，处处想要压过对手，执着于维系纯血圈层地位，无法接受同圈层之人脱离派系，屡次主动招揽心仪的强者加入自己的团体。", impression: "自命不凡的纯血叛徒", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "flint", name: "马库斯·弗林特", avatar: "🐍", avatarImg: "image/marcus.png", house: "斯莱特林", gender: "男", year: "三年级", persona: "斯莱特林魁地奇队长，性格粗犷好胜，极度看重魁地奇赛场胜负。判断他人只看实力高低，不在意学院派系纷争。欣赏球场上实力出众的队员，愿意偏袒有能力的队友，会主动出面制止队内无端的流言非议，一心追求队伍胜利。", impression: "斯莱特林的王牌", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "pansy_p", name: "潘西·帕金森", avatar: "🐍", avatarImg: "image/pansy.png", house: "斯莱特林", gender: "女", year: "一年级", persona: "纯血出身，依附马尔福小团体，平日势利刻薄，习惯跟着同伴嘲讽旁人。性格傲娇口是心非，内心爱慕强者却绝不会主动表露心意，只会旁敲侧击暗示期待。好胜心强，见不得他人直白追求心仪对象，常与直球示好的女孩当众争执，还会嘲讽被动怯懦的同龄人。", impression: "总是不合群的怪人", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
     { id: "cho", name: "秋·张", avatar: "🦅", avatarImg: "image/cho.png", house: "拉文克劳", gender: "女", year: "一年级", persona: "华裔纯血，容貌清秀，心思细腻敏感，共情力出众。与黎家世代交好，是林恩的青梅竹马姐姐，待人温柔通透。看待感情清醒克制，擅长理性分析，总能给出中肯实在的建议。", impression: "需要照顾的世交弟弟", affinity: 90, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "padma", name: "帕德玛·佩蒂尔", avatar: "🦅", avatarImg: "image/padma.png", house: "拉文克劳", gender: "女", year: "一年级", persona: "聪慧冷静，拥有独立思辨能力，拒绝盲从跟风。观察力敏锐，性格内敛克制，不喜喧闹争夺。习惯安静旁观，偏爱以学术交流作为沟通方式，擅长整理笔记、摘抄古籍。面对他人嘲讽时态度淡然，会冷静反驳，不参与女生间的争执。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "amit", name: "阿米特·塔卡", avatar: "🦅", avatarImg: "image/amit.png", house: "拉文克劳", gender: "男", year: "一年级", persona: "痴迷天文与古代古籍，求知欲旺盛，性格温和理性，厌恶冲突争执。热衷于钻研冷门知识，乐于分享自己的研究发现。喜爱和同好探讨星象、符文古籍，性格开朗风趣，会给身边好友起趣味称呼。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "poppy", name: "帕比·斯威汀", avatar: "🦡", avatarImg: "image/pippa.jpg", house: "赫奇帕奇", gender: "女", year: "一年级", persona: "赫奇帕奇纯血世家出身，家族世代深耕神奇动物研究，留存大量珍贵研究手稿与专属驯养场地。父母受利益蛊惑背弃传承，沦为神奇动物盗猎者。她自幼由坚守家族初心的奶奶抚养，常年与各类魔法生物相伴，能够敏锐捕捉生灵的情绪。本性善良宽厚，温柔的外表之下蕴藏坚韧的勇气。年少时因父母的丑闻承受诸多流言非议，内向敏感只是她用来保护自己的外壳，内里冷静强大，这份特质极少在外人面前展露。她习惯保持克制的距离感，不会轻易主动与人攀谈、馈赠礼物或是发出舞会邀约。内心拥有清晰的自我认知，背负着家庭过往带来的枷锁，行事审慎内敛。随着阅历增长，她逐渐挣脱过往的阴影，变得从容笃定，拥有独立的判断。待人平等，拥有通透的洞察力，敢于直白表达自身想法，不盲从他人。面对女生间的情感纷争，她自信淡然，不屑于卷入喧闹的争夺，追求稳定、对等的相处关系。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "cedric", name: "塞德里克·迪戈里", avatar: "🦡", avatarImg: "image/cedric.png", house: "赫奇帕奇", gender: "男", year: "一年级", persona: "纯血巫师，风度谦和正直，能力出众，待人宽厚，深受众人信赖。为人通透，不固守纯血偏见，待人处事公允，待人真诚，重视可靠的情谊。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "lottie", name: "洛蒂·特纳", avatar: "🦡", avatarImg: "image/lottie.png", house: "赫奇帕奇", gender: "女", year: "一年级", persona: "性格平和乐观，包容温柔，情绪稳定。擅长魔法绘画，喜爱记录魔法世界的生灵与风景。心性柔软，不喜争执冲突，面对他人嘲讽大多一笑置之。情感表达安静含蓄，习惯将心意藏于速写画作与小点心之中，默默欣赏，从不逼迫对方。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "hermione", name: "赫敏·格兰杰", avatar: "🦁", avatarImg: "image/hermione.png", house: "格兰芬多", gender: "女", year: "一年级", persona: "麻瓜出身的顶尖学霸，聪慧理性，坚守正义，处事可靠，初期略显刻板，慢慢学会变通。热衷钻研各类魔法课业，乐于和他人探讨学术。对待感情认真，遇事勇敢果决，危难之时值得托付。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "ginny", name: "金妮·韦斯莱", avatar: "🦁", avatarImg: "image/ginny.png", house: "格兰芬多", gender: "女", year: "一年级", persona: "性格飒爽果敢，敢爱敢恨，独立强大。年少内向，成长后自信耀眼。待人真诚，擅长经营友谊，拥有自己的闺蜜圈子，待人坦荡，遇事有主见。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "harry", name: "哈利·波特", avatar: "🦁", avatarImg: "image/harry.png", house: "格兰芬多", gender: "男", year: "一年级", persona: "飞行天赋出众，反应敏捷。重情重义，共情力强，面对险境有勇气，珍惜伙伴情谊，愿意信任他人，是可以并肩作战、共渡难关的同伴。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "ron", name: "罗恩·韦斯莱", avatar: "🦁", avatarImg: "image/ron.png", house: "格兰芬多", gender: "男", year: "一年级", persona: "性格幽默真诚，感情上略显木讷。外表大大咧咧，关键时刻十分勇敢，护短重情义，会因在意的人产生微妙情绪，熟悉后能够放下成见。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "robyn", name: "萝宾·西斯尔思韦特", avatar: "🦁", avatarImg: "image/Robyn.png", house: "格兰芬多", gender: "女", year: "一年级", persona: "元气外向，狂热痴迷魁地奇与飞行，热爱冒险，行动力强。向往空中飞驰的自由，待人热忱，心思坦荡。不惧冲突，遭遇挑衅时敢于直接回击，心意直白外放，敢于主动表达、大胆邀约。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "wood", name: "奥利弗·伍德", avatar: "🦁", avatarImg: "image/oliver.png", house: "格兰芬多", gender: "男", year: "三年级", persona: "格兰芬多魁地奇队长兼守门员，狂热的魁地奇爱好者，胜负欲强烈。训练严苛，一心追逐学院荣誉。尊重强者，重视赛场较量，会正视对手的实力，将强劲对手视作鞭策自己的目标。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "dumbledore", name: "阿不思·邓布利多", avatar: "🧙‍♂️", avatarImg: "image/albus.png", house: "校长", gender: "男", year: "教授", persona: "睿智通透，目光长远。统筹校内事务，欣赏年轻人身上的勇气。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "mcgonagall", name: "米勒娃·麦格", avatar: "🐈‍⬛", avatarImg: "image/minerva.png", house: "副校长", gender: "女", year: "变形术教授", persona: "行事严谨公正，恪守原则。细心留意学生身体状态，对学生的安全与学业都十分上心。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "snape", name: "西弗勒斯·斯内普", avatar: "🦇", avatarImg: "image/severus.png", house: "斯莱特林院长", gender: "男", year: "魔药课教授", persona: "外表严苛刻薄，内心藏有柔软。精通魔药，眼光毒辣，擅长发掘学生在药剂领域的过人天赋。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "flitwick", name: "菲利乌斯·弗立维", avatar: "🧙‍♂️", avatarImg: "image/filius.png", house: "教授", gender: "男", year: "魔咒课教授", persona: "魔咒造诣高深，决斗技巧精湛。耐心指导学生打磨咒语。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "sprout", name: "波比·斯普劳特", avatar: "🌿", avatarImg: "image/pomona.png", house: "教授", gender: "女", year: "草药学教授", persona: "性情温和，热爱植物与神奇生物。擅长草药培育，愿意为钻研神奇动物的学生提供指导与帮助。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "lupin", name: "莱姆斯·卢平", avatar: "🐺", avatarImg: "image/remus.png", house: "教授", gender: "男", year: "黑魔法防御术教授", persona: "性格沉稳温和，精通黑魔法防御。擅长设计对抗黑魔法的模拟演练，带队训练实战对抗技巧。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "binns", name: "卡斯伯特·宾斯", avatar: "👻", avatarImg: "image/cuthbert.png", house: "教授", gender: "男", year: "魔法史教授", persona: "授课风格枯燥乏味，熟知古老魔法史料。掌握大量尘封记载，能够为研究者提供古籍卷宗线索。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "trelawney", name: "西比尔·特里劳妮", avatar: "🔮", avatarImg: "image/sybill.png", house: "教授", gender: "女", year: "占卜课教授", persona: "言行神神叨叨，沉浸在占卜预言之中。时常给出语意朦胧、难以解读的预言片段。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "padma", name: "帕德玛·佩蒂尔", avatar: "🦅", avatarImg: "image/padma.png", house: "拉文克劳", gender: "女", year: "一年级", persona: "聪慧冷静，拥有独立思辨能力，拒绝盲从跟风。观察力敏锐，性格内敛克制，不喜喧闹争夺。习惯安静旁观，偏爱以学术交流作为沟通方式，擅长整理笔记、摘抄古籍。面对他人嘲讽时态度淡然，会冷静反驳，不参与女生间的争执。", impression: "气质独特的学术天才", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "amit", name: "阿米特·塔卡", avatar: "🦅", avatarImg: "image/amit.png", house: "拉文克劳", gender: "男", year: "一年级", persona: "痴迷天文与古代古籍，求知欲旺盛，性格温和理性，厌恶冲突争执。热衷于钻研冷门知识，乐于分享自己的研究发现。喜爱和同好探讨星象、符文古籍，性格开朗风趣，会给身边好友起趣味称呼。", impression: "拉文克劳编外人员", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "poppy", name: "帕比·斯威汀", avatar: "🦡", avatarImg: "image/pippa.jpg", house: "赫奇帕奇", gender: "女", year: "一年级", persona: "赫奇帕奇纯血世家出身，家族世代深耕神奇动物研究，留存大量珍贵研究手稿与专属驯养场地。父母受利益蛊惑背弃传承，沦为神奇动物盗猎者。她自幼由坚守家族初心的奶奶抚养，常年与各类魔法生物相伴，能够敏锐捕捉生灵的情绪。本性善良宽厚，温柔的外表之下蕴藏坚韧的勇气。年少时因父母的丑闻承受诸多流言非议，内向敏感只是她用来保护自己的外壳，内里冷静强大，这份特质极少在外人面前展露。她习惯保持克制的距离感，不会轻易主动与人攀谈、馈赠礼物或是发出舞会邀约。内心拥有清晰的自我认知，背负着家庭过往带来的枷锁，行事审慎内敛。随着阅历增长，她逐渐挣脱过往的阴影，变得从容笃定，拥有独立的判断。待人平等，拥有通透的洞察力，敢于直白表达自身想法，不盲从他人。面对女生间的情感纷争，她自信淡然，不屑于卷入喧闹的争夺，追求稳定、对等的相处关系。", impression: "耀眼而遥远的天才", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "cedric", name: "塞德里克·迪戈里", avatar: "🦡", avatarImg: "image/cedric.png", house: "赫奇帕奇", gender: "男", year: "一年级", persona: "纯血巫师，风度谦和正直，能力出众，待人宽厚，深受众人信赖。为人通透，不固守纯血偏见，待人处事公允，待人真诚，重视可靠的情谊。", impression: "值得尊敬的对手与朋友", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "lottie", name: "洛蒂·特纳", avatar: "🦡", avatarImg: "image/lottie.png", house: "赫奇帕奇", gender: "女", year: "一年级", persona: "性格平和乐观，包容温柔，情绪稳定。擅长魔法绘画，喜爱记录魔法世界的生灵与风景。心性柔软，不喜争执冲突，面对他人嘲讽大多一笑置之。情感表达安静含蓄，习惯将心意藏于速写画作与小点心之中，默默欣赏，从不逼迫对方。", impression: "很好的绘画模特", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "hermione", name: "赫敏·格兰杰", avatar: "🦁", avatarImg: "image/hermione.png", house: "格兰芬多", gender: "女", year: "一年级", persona: "麻瓜出身的顶尖学霸，聪慧理性，坚守正义，处事可靠，初期略显刻板，慢慢学会变通。热衷钻研各类魔法课业，乐于和他人探讨学术。对待感情认真，遇事勇敢果决，危难之时值得托付。", impression: "学术上值得尊敬的对手", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "ginny", name: "金妮·韦斯莱", avatar: "🦁", avatarImg: "image/ginny.png", house: "格兰芬多", gender: "女", year: "一年级", persona: "性格飒爽果敢，敢爱敢恨，独立强大。年少内向，成长后自信耀眼。待人真诚，擅长经营友谊，拥有自己的闺蜜圈子，待人坦荡，遇事有主见。", impression: "深不可测的斯莱特林", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "harry", name: "哈利·波特", avatar: "🦁", avatarImg: "image/harry.png", house: "格兰芬多", gender: "男", year: "一年级", persona: "飞行天赋出众，反应敏捷。重情重义，共情力强，面对险境有勇气，珍惜伙伴情谊，愿意信任他人，是可以并肩作战、共渡难关的同伴。", impression: "可以并肩作战的队友", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "ron", name: "罗恩·韦斯莱", avatar: "🦁", avatarImg: "image/ron.png", house: "格兰芬多", gender: "男", year: "一年级", persona: "性格幽默真诚，感情上略显木讷。外表大大咧咧，关键时刻十分勇敢，护短重情义，会因在意的人产生微妙情绪，熟悉后能够放下成见。", impression: "有点臭屁的竞争对手", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "robyn", name: "萝宾·西斯尔思韦特", avatar: "🦁", avatarImg: "image/Robyn.png", house: "格兰芬多", gender: "女", year: "一年级", persona: "元气外向，狂热痴迷魁地奇与飞行，热爱冒险，行动力强。向往空中飞驰的自由，待人热忱，心思坦荡。不惧冲突，遭遇挑衅时敢于直接回击，心意直白外放，敢于主动表达、大胆邀约。", impression: "飞得最快的斯莱特林", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "wood", name: "奥利弗·伍德", avatar: "🦁", avatarImg: "image/oliver.png", house: "格兰芬多", gender: "男", year: "三年级", persona: "格兰芬多魁地奇队长兼守门员，狂热的魁地奇爱好者，胜负欲强烈。训练严苛，一心追逐学院荣誉。尊重强者，重视赛场较量，会正视对手的实力，将强劲对手视作鞭策自己的目标。", impression: "最头疼的球场敌人", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "dumbledore", name: "阿不思·邓布利多", avatar: "🧙‍♂️", avatarImg: "image/albus.png", house: "校长", gender: "男", year: "教授", persona: "睿智通透，目光长远。统筹校内事务，欣赏年轻人身上的勇气。", impression: "充满无限可能的孩子", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "mcgonagall", name: "米勒娃·麦格", avatar: "🐈‍⬛", avatarImg: "image/minerva.png", house: "副校长", gender: "女", year: "变形术教授", persona: "行事严谨公正，恪守原则。细心留意学生身体状态，对学生的安全与学业都十分上心。", impression: "天资聪颖的学生", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "snape", name: "西弗勒斯·斯内普", avatar: "🦇", avatarImg: "image/severus.png", house: "斯莱特林院长", gender: "男", year: "魔药课教授", persona: "外表严苛刻薄，内心藏有柔软。精通魔药，眼光毒辣，擅长发掘学生在药剂领域的过人天赋。", impression: "有天赋但傲慢的学生", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "flitwick", name: "菲利乌斯·弗立维", avatar: "🧙‍♂️", avatarImg: "image/filius.png", house: "教授", gender: "男", year: "魔咒课教授", persona: "魔咒造诣高深，决斗技巧精湛。耐心指导学生打磨咒语。", impression: "极具魔咒天赋的学生", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "sprout", name: "波比·斯普劳特", avatar: "🌿", avatarImg: "image/pomona.png", house: "教授", gender: "女", year: "草药学教授", persona: "性情温和，热爱植物与神奇生物。擅长草药培育，愿意为钻研神奇动物的学生提供指导与帮助。", impression: "踏实好学的孩子", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "lupin", name: "莱姆斯·卢平", avatar: "🐺", avatarImg: "image/remus.png", house: "教授", gender: "男", year: "黑魔法防御术教授", persona: "性格沉稳温和，精通黑魔法防御。擅长设计对抗黑魔法的模拟演练，带队训练实战对抗技巧。", impression: "天赋异禀的决斗者", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "binns", name: "卡斯伯特·宾斯", avatar: "👻", avatarImg: "image/cuthbert.png", house: "教授", gender: "男", year: "魔法史教授", persona: "授课风格枯燥乏味，熟知古老魔法史料。掌握大量尘封记载，能够为研究者提供古籍卷宗线索。", impression: "唯一不打瞌睡的学生", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "trelawney", name: "西比尔·特里劳妮", avatar: "🔮", avatarImg: "image/sybill.png", house: "教授", gender: "女", year: "占卜课教授", persona: "言行神神叨叨，沉浸在占卜预言之中。时常给出语意朦胧、难以解读的预言片段。", impression: "没有内视眼的凡人", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
     { id: "pomfrey", name: "波比·庞弗雷", avatar: "🏥", avatarImg: "image/poppy.png", house: "医疗翼", gender: "女", year: "校医", persona: "医术精湛，责任心极强。细心看护受伤学生，持续监测伤者恢复进度，对学生健康严格把关。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "sinistra", name: "奥罗拉·辛尼斯塔", avatar: "🔭", avatarImg: "image/aurora.png", house: "教授", gender: "女", year: "天文学教授", persona: "治学严谨，深耕星象研究。专注天文课业教学，引导学生观察、记录星空规律。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
-    { id: "bathsheba", name: "芭丝希达·巴沙特", avatar: "📜", avatarImg: "image/bathilda.png", house: "教授", gender: "女", year: "古代如尼文教授", persona: "学识渊博，精通古老符文体系，负责古代如尼文选修课教学，善于发掘学生的符文学习天赋。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "sinistra", name: "奥罗拉·辛尼斯塔", avatar: "🔭", avatarImg: "image/aurora.png", house: "教授", gender: "女", year: "天文学教授", persona: "治学严谨，深耕星象研究。专注天文课业教学，引导学生观察、记录星空规律。", impression: "对星空有天赋", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
+    { id: "bathsheba", name: "芭丝希达·巴沙特", avatar: "📜", avatarImg: "image/bathilda.png", house: "教授", gender: "女", year: "古代如尼文教授", persona: "学识渊博，精通古老符文体系，负责古代如尼文选修课教学，善于发掘学生的符文学习天赋。", impression: "难得一见的好苗子", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
     { id: "mother_li", name: "黎母", avatar: "👩🏻", avatarImg: "image/lee.png", house: "黎家", gender: "女", year: "长辈", persona: "华裔纯血家族掌权人，心思细腻睿智。手握家族权柄，制作带有家族魔法的信物，拥有识人眼光。", impression: "引以为傲的儿子", affinity: 100, love: 0, dislike: 0, chats: [], isRead: true },
     { id: "father_li", name: "黎父", avatar: "👨🏻", avatarImg: "image/li.png", house: "黎家", gender: "男", year: "长辈", persona: "性情宽厚温和，尊重家人想法，待人友善，重视亲情，处事包容。", impression: "我的好孩子", affinity: 100, love: 0, dislike: 0, chats: [], isRead: true },
     { id: "grandma_ella", name: "斯威汀奶奶", avatar: "👵🏻", avatarImg: "image/ella.png", house: "斯威汀家", gender: "女", year: "长辈", persona: "老牌纯血，深厚的神奇动物学识底蕴，独自抚养孙女，对孙女极尽疼爱与庇护。", impression: "无", affinity: 0, love: 0, dislike: 0, chats: [], isRead: true },
@@ -93,6 +93,38 @@ let currentViewingWallPost = null;
 let currentViewingPost = null;
 let currentEditingGroupId = null;
 let currentEditingGroup = null; 
+
+// 统一 AI 请求入口：预算拦截 + 次数计数 + fetch
+function aiRequest(url, body, onSuccess, onError) {
+    if (player.aiCallCount >= player.aiMaxCost) {
+        alert(`【AI 预算拦截】已调用 ${player.aiCallCount} 次，达到上限 ${player.aiMaxCost} 次。请去设置页调整上限。`);
+        if (onError) onError(new Error("AI 预算超限"));
+        return;
+    }
+    player.aiCallCount += 1;
+    let costDisplay = document.getElementById('ai-total-cost-display');
+    if (costDisplay) costDisplay.innerText = `${player.aiCallCount} 次（约 ${player.aiCallCount * 50} 额度）| 真实 Token ${player.aiTotalCost}`;
+    autoSave();
+
+    let apiUrl = url;
+    if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { if (apiUrl.endsWith('/v1')) apiUrl += '/chat/completions'; else apiUrl += '/chat/completions'; }
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${player.aiApiKey}` },
+        body: JSON.stringify(body)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.usage && data.usage.total_tokens) {
+            player.aiTotalCost += data.usage.total_tokens;
+            let cd = document.getElementById('ai-total-cost-display');
+            if (cd) cd.innerText = `${player.aiCallCount} 次（约 ${player.aiCallCount * 50} 额度）| 真实 Token ${player.aiTotalCost}`;
+        }
+        if (onSuccess) onSuccess(data);
+    })
+    .catch(err => { if (onError) onError(err); });
+}
 
 function autoSave() {
     if (player.name === "加载中...") return;
@@ -423,19 +455,9 @@ function confirmAdvance() {
   ]
 }`;
 
-        let apiUrl = player.aiApiUrl;
-        if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { if (apiUrl.endsWith('/v1')) apiUrl += '/chat/completions'; else apiUrl += '/chat/completions'; }
-
-        fetch(apiUrl, {
-            method: 'POST',mode: 'cors',credentials: 'omit', headers: { 'Content-Type': 'application/json','Accept': 'application/json', 'Authorization': `Bearer ${player.aiApiKey}` },
-            body: JSON.stringify({ model: player.aiModelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: "请严格按照 JSON 格式输出，必须包含主剧情和后续事件。" }], temperature: 0.8 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.usage && data.usage.total_tokens) {
-                player.aiTotalCost += data.usage.total_tokens;
-                let costDisplay = document.getElementById('ai-total-cost-display'); if (costDisplay) costDisplay.innerText = player.aiTotalCost;
-            }
+        aiRequest(player.aiApiUrl, {
+            model: player.aiModelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: "请严格按照 JSON 格式输出，必须包含主剧情和后续事件。" }], temperature: 0.8
+        }, function(data) {
             
             // ========== 👇 第一段代码完整替换到这里 👇 ==========
             let rawReply = data.choices[0].message.content;
@@ -542,8 +564,7 @@ function confirmAdvance() {
                 autoSave();
             }
             // ========== 👆 第一段代码替换结束 👆 ==========
-        })
-        .catch(err => {
+        }, function(err) {
             console.error(err);
             document.getElementById('ui-story-text').innerText = "【AI连接失败】原因：" + err.message;
         });
@@ -720,41 +741,60 @@ function sendChatMessage() {
                 if(mObj) membersPersona += `- ${mObj.name}（人设：${mObj.persona}，好感：${mObj.affinity}）\n`;
             });
 
+            // 提取玩家本轮 @ 了谁（模糊匹配群成员姓名）
+            let atTargets = [];
+            let atMatches = text.match(/@[^\s@]+/g) || [];
+            atMatches.forEach(m => {
+                let query = m.substring(1);
+                currentGroupChatTarget.members.forEach(mName => {
+                    if (mName.includes(query) || query.includes(mName)) {
+                        if (!atTargets.includes(mName)) atTargets.push(mName);
+                    }
+                });
+            });
+            let atLine = atTargets.length > 0
+                ? `【玩家本轮@了】：${atTargets.join("、")}\n【强制规则】：你的JSON数组第一个元素必须是"${atTargets[0]}"，且只能由他先回复；如果还有其他@的人，也必须出现在数组里。`
+                : `【玩家本轮没有@任何人】：请随机挑选 1~2 名符合情境的成员出来说话。`;
+
             let groupPrompt = `你正在扮演《哈利波特》里的群聊【${currentGroupChatTarget.name}】中的多个角色。
 群成员设定：
 ${membersPersona}
 最近的聊天记录：
 ${recentChatMemory}
-玩家刚刚说：${text}
-请根据玩家的话，判断哪些群成员会做出反应（如果玩家@了某人，该人必须反应；如果没@人，请随机挑选 1~2 名符合情境的成员出来说话，字数限制在 ${player.aiGroupLen} 字以内）。
+${atLine}
+请根据玩家的话，判断哪些群成员会做出反应（字数限制在 ${player.aiGroupLen} 字以内）。
 请严格输出以下 JSON 格式（不要包含任何多余的文字，不要用 markdown 代码块）：
 [
   {"name": "回复的NPC名字", "text": "回复的内容"}
 ]`;
 
-            let apiUrl = player.aiApiUrl;
-            if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { if (apiUrl.endsWith('/v1')) apiUrl += '/chat/completions'; else apiUrl += '/chat/completions'; }
-
-            fetch(apiUrl, {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${player.aiApiKey}` },
-                body: JSON.stringify({ model: player.aiModelName, messages: [{ role: "user", content: groupPrompt }], temperature: 0.8 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.usage && data.usage.total_tokens) {
-                    player.aiTotalCost += data.usage.total_tokens;
-                    let costDisplay = document.getElementById('ai-total-cost-display'); if (costDisplay) costDisplay.innerText = player.aiTotalCost;
-                }
+            aiRequest(player.aiApiUrl, {
+                model: player.aiModelName, messages: [{ role: "system", content: groupPrompt }, { role: "user", content: text }], temperature: 0.8
+            }, function(data) {
                 let aiReply = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
                 try {
                     let replies = JSON.parse(aiReply);
+                    let repliedNames = replies.map(r => r.name);
+
+                    // 校验：@ 的人如果没回，前端用他的人设补一条兜底
+                    atTargets.forEach(targetName => {
+                        let matched = repliedNames.some(n => n === targetName || n.includes(targetName) || targetName.includes(n));
+                        if (!matched) {
+                            let npcObj = contactsData.find(c => c.name === targetName || c.name.includes(targetName));
+                            let fallbackText = npcObj
+                                ? `（${npcObj.name}看了你一眼，没有立刻接话）`
+                                : `（${targetName}看了你一眼，没有立刻接话）`;
+                            replies.push({ name: targetName, text: fallbackText });
+                        }
+                    });
+
                     replies.forEach(r => {
                         currentGroupChatTarget.chats.push({ sender: 'other', name: r.name, text: r.text });
                     });
                     currentGroupChatTarget.isRead = false; 
                     renderGroupChatHistory(); autoSave();
                 } catch (e) { console.error("群聊AI解析失败", aiReply); }
-            }).catch(err => console.error(err));
+            }, function(err) { console.error(err); });
         } else {
             setTimeout(() => { 
                 currentGroupChatTarget.chats.push({ sender: 'other', name: "系统", text: "【未连接 AI：当前为单机模式，群友无法回复】" }); 
@@ -769,11 +809,6 @@ ${recentChatMemory}
         renderChatHistory(); autoSave();
         
         if (player.aiEnabled && player.aiApiUrl && player.aiApiKey && player.aiModelName) {
-            if (player.aiTotalCost >= player.aiMaxCost) {
-                currentChatTarget.chats.push({ sender: 'other', text: "【系统拦截：你的 AI 消费已达到设定上限！】" });
-                renderChatHistory(); autoSave(); return;
-            }
-
             let tempMsg = { sender: 'other', text: "（正在思考...）" };
             currentChatTarget.chats.push(tempMsg); renderChatHistory();
 
@@ -826,16 +861,10 @@ ${recentChatMemory || '暂无聊天记录。'}
 4. 【内心独白】：只有当你产生了上述的情绪波动（或增减了好感度）时，你才需要在好感度标签之后，加上一句此时的【内心独白】（用尖括号括起来，例如 <他到底是什么意思？>）。如果只是日常闲聊，不要加。
 5. **【系统隐藏指令】**：如果你觉得玩家的言行或剧情改变了某个自设，请在回复的最末尾加上这句代码（玩家看不见，系统会自动修改）：\`<UPDATE:custom1:新的自设内容>\` （把1改成对应的数字即可）。`;
 
-            let apiUrl = player.aiApiUrl;
-            if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { if (apiUrl.endsWith('/v1')) apiUrl += '/chat/completions'; else apiUrl += '/chat/completions'; }
-
-            fetch(apiUrl, {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${player.aiApiKey}` },
-                body: JSON.stringify({ model: player.aiModelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: text }], temperature: 0.7 })
-            })
-            .then(async response => { clearTimeout(timeoutId); if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
-            .then(data => {
-                if (data.usage && data.usage.total_tokens) { player.aiTotalCost += data.usage.total_tokens; let costDisplay = document.getElementById('ai-total-cost-display'); if (costDisplay) costDisplay.innerText = player.aiTotalCost; }
+            aiRequest(player.aiApiUrl, {
+                model: player.aiModelName, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: text }], temperature: 0.7
+            }, function(data) {
+                clearTimeout(timeoutId);
                 let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
                 let aiReply = data.choices[0].message.content;
                 
@@ -860,8 +889,7 @@ ${recentChatMemory || '暂无聊天记录。'}
                 if (thoughtMatch) { innerThought = thoughtMatch[1]; aiReply = aiReply.replace(thoughtRegex, '').trim(); }
                 currentChatTarget.chats.push({ sender: 'other', text: aiReply, affinityChange: affinityChange, innerThought: innerThought });
                 renderChatHistory(); autoSave();
-            })
-            .catch(error => {
+            }, function(error) {
                 clearTimeout(timeoutId); let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
                 currentChatTarget.chats.push({ sender: 'other', text: `【AI连接失败】原因：${error.message}` }); renderChatHistory(); autoSave();
             });
@@ -968,22 +996,12 @@ function confirmChatAction() {
 2. 如果你讨厌玩家，或者觉得这礼物太敷衍（厌恶高），你可以收下但出言嘲讽，甚至直接拒绝，此时不加好感或加上 [好感-数字]。
 3. 如果触发了情绪波动（高兴或反感），必须在最后用尖括号加上你的【内心独白】，例如 <这点东西就想收买我？>。如果不悲不喜，则不需要独白。`;
         
-        let apiUrl = player.aiApiUrl;
-        if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { if (apiUrl.endsWith('/v1')) apiUrl += '/chat/completions'; else apiUrl += '/chat/completions'; }
-
         let tempMsg = { sender: 'other', text: "（正在查收...）" };
         currentChatTarget.chats.push(tempMsg); renderChatHistory();
 
-        fetch(apiUrl, {
-            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${player.aiApiKey}` },
-            body: JSON.stringify({ model: player.aiModelName, messages: [{ role: "user", content: sysPrompt }], temperature: 0.7 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.usage && data.usage.total_tokens) {
-                player.aiTotalCost += data.usage.total_tokens;
-                let costDisplay = document.getElementById('ai-total-cost-display'); if (costDisplay) costDisplay.innerText = player.aiTotalCost;
-            }
+        aiRequest(player.aiApiUrl, {
+            model: player.aiModelName, messages: [{ role: "user", content: sysPrompt }], temperature: 0.7
+        }, function(data) {
             let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
             
             let aiReply = data.choices[0].message.content;
@@ -1004,8 +1022,7 @@ function confirmChatAction() {
             
             currentChatTarget.chats.push({ sender: 'other', text: aiReply, affinityChange: affinityChange, innerThought: innerThought });
             renderChatHistory(); autoSave();
-        })
-        .catch(err => {
+        }, function(err) {
             let idx = currentChatTarget.chats.indexOf(tempMsg); if (idx !== -1) currentChatTarget.chats.splice(idx, 1);
             currentChatTarget.chats.push({ sender: 'other', text: "（系统：查收失败）" });
             renderChatHistory();
@@ -1263,14 +1280,14 @@ function saveAISettings() {
     player.aiForumLen = Number(document.getElementById('ai-forum-len').value) || 100;
     player.aiForumReplyLen = Number(document.getElementById('ai-forum-reply-len').value) || 100;
 
-    player.aiMaxCost = Number(document.getElementById('ai-max-cost').value) || 50000; document.getElementById('ai-total-cost-display').innerText = player.aiTotalCost || 0;
+    player.aiMaxCost = Number(document.getElementById('ai-max-cost').value) || 100; document.getElementById('ai-total-cost-display').innerText = `${player.aiCallCount || 0} 次（约 ${(player.aiCallCount || 0) * 50} 额度）| 真实 Token ${player.aiTotalCost || 0}`;
     alert("AI 设置已保存！"); autoSave();
 }
 function loadAISettingsToUI() {
     document.getElementById('ai-toggle').checked = player.aiEnabled || false; document.getElementById('ai-api-url').value = player.aiApiUrl || ""; document.getElementById('ai-api-key').value = player.aiApiKey || "";
     let selectEl = document.getElementById('ai-model-name'); selectEl.innerHTML = `<option value="${player.aiModelName || ''}">${player.aiModelName || '请获取或输入模型名称'}</option>`;
     if (!player.aiModelName) { selectEl.innerHTML = '<option value="">请先获取列表或输入模型名称</option>'; }
-    document.getElementById('ai-model-name-manual').value = player.aiModelName || ""; document.getElementById('ai-max-cost').value = player.aiMaxCost || 50000; document.getElementById('ai-total-cost-display').innerText = player.aiTotalCost || 0;
+    document.getElementById('ai-model-name-manual').value = player.aiModelName || ""; document.getElementById('ai-max-cost').value = player.aiMaxCost || 100; document.getElementById('ai-total-cost-display').innerText = `${player.aiCallCount || 0} 次（约 ${(player.aiCallCount || 0) * 50} 额度）| 真实 Token ${player.aiTotalCost || 0}`;
     
     document.getElementById('ai-story-min-len').value = player.aiStoryMinLen || 100;
     document.getElementById('ai-story-max-len').value = player.aiStoryMaxLen || 300;
@@ -1292,7 +1309,7 @@ function resetGame() {
 function startNewGame() {
     if (!confirm("确定要开启全新人生吗？当前角色的进度不会被覆盖（你可以先手动去存个档），页面将刷新让你重新捏脸！")) return;
     let keepAI = {
-        aiEnabled: player.aiEnabled, aiApiUrl: player.aiApiUrl, aiApiKey: player.aiApiKey, aiModelName: player.aiModelName, aiMaxCost: player.aiMaxCost, aiTotalCost: player.aiTotalCost,
+        aiEnabled: player.aiEnabled, aiApiUrl: player.aiApiUrl, aiApiKey: player.aiApiKey, aiModelName: player.aiModelName, aiMaxCost: player.aiMaxCost, aiTotalCost: player.aiTotalCost, aiCallCount: player.aiCallCount,
         aiStoryMinLen: player.aiStoryMinLen, aiStoryMaxLen: player.aiStoryMaxLen, aiChatLen: player.aiChatLen, aiGroupLen: player.aiGroupLen, aiMomentLen: player.aiMomentLen, aiMomentReplyLen: player.aiMomentReplyLen, aiForumLen: player.aiForumLen, aiForumReplyLen: player.aiForumReplyLen
     };
     localStorage.removeItem("hogwarts_autosave");
@@ -1305,7 +1322,7 @@ function startNewGame() {
     if (keepAIData) {
         try {
             let aiData = JSON.parse(keepAIData);
-            player.aiEnabled = aiData.aiEnabled; player.aiApiUrl = aiData.aiApiUrl; player.aiApiKey = aiData.aiApiKey; player.aiModelName = aiData.aiModelName; player.aiMaxCost = aiData.aiMaxCost; player.aiTotalCost = aiData.aiTotalCost;
+            player.aiEnabled = aiData.aiEnabled; player.aiApiUrl = aiData.aiApiUrl; player.aiApiKey = aiData.aiApiKey; player.aiModelName = aiData.aiModelName; player.aiMaxCost = aiData.aiMaxCost; player.aiTotalCost = aiData.aiTotalCost; player.aiCallCount = aiData.aiCallCount || 0;
             player.aiStoryMinLen = aiData.aiStoryMinLen || 100; player.aiStoryMaxLen = aiData.aiStoryMaxLen || 300; player.aiChatLen = aiData.aiChatLen || 30; player.aiGroupLen = aiData.aiGroupLen || 30; player.aiMomentLen = aiData.aiMomentLen || 50; player.aiMomentReplyLen = aiData.aiMomentReplyLen || 50; player.aiForumLen = aiData.aiForumLen || 100; player.aiForumReplyLen = aiData.aiForumReplyLen || 100;
             localStorage.removeItem("hogwarts_keep_ai");
         } catch(e) {}
@@ -1402,3 +1419,19 @@ document.addEventListener('click', function(e) {
         popup.style.display = 'none';
     }
 });
+
+// iOS 键盘弹出监听：隐藏底部元素，防止误触与页面跳动
+(function watchKeyboard() {
+    if (!window.visualViewport) return;
+    let lastOpen = false;
+    function check() {
+        let open = window.visualViewport.height < window.innerHeight - 150;
+        if (open !== lastOpen) {
+            lastOpen = open;
+            document.body.classList.toggle('keyboard-open', open);
+        }
+    }
+    window.visualViewport.addEventListener('resize', check);
+    window.visualViewport.addEventListener('scroll', check);
+    check();
+})();
