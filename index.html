@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>霍格沃茨模拟器</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -205,11 +205,11 @@
 
                     <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
                         <div class="input-group" style="margin-bottom: 0;">
-                            <label>单次对话最高预算 (Token)：</label>
-                            <input type="number" id="ai-max-cost" placeholder="例如 50000" min="0">
+                            <label>最多调用次数（按次计费）：</label>
+                            <input type="number" id="ai-max-cost" placeholder="例如 50" min="0">
                         </div>
                         <div class="input-group" style="margin-bottom: 0;">
-                            <label>累计已消耗 (Token)：</label>
+                            <label>累计消耗（次数 / 额度 / Token）：</label>
                             <div style="padding: 8px; border: 1px solid #ccc; border-radius: 8px; background: #e5e5ea; color: #666; font-weight: bold; text-align: center;" id="ai-total-cost-display">
                                 0
                             </div>
