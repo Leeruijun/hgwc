@@ -1205,8 +1205,27 @@ function openNpcProfile(npcId) {
     let preview = document.getElementById('npc-avatar-preview');
     if (tempNpcAvatarImg) { preview.innerHTML = `<img src="${tempNpcAvatarImg}" style="width:100%; height:100%; object-fit:cover;">`; } else { preview.innerText = npc.avatar || "🦁"; }
     document.getElementById('npc-input-gender').value = npc.gender || "女"; 
-    document.getElementById('npc-input-house').value = npc.house || "格兰芬多"; 
-    document.getElementById('npc-input-year').value = npc.year || "一年级";
+    
+    // 🛠️ 动态补全学院选项
+    let houseSelect = document.getElementById('npc-input-house');
+    let hasHouseOption = Array.from(houseSelect.options).some(o => o.value === npc.house);
+    if (!hasHouseOption && npc.house) {
+        let opt = document.createElement('option');
+        opt.value = npc.house; opt.innerText = npc.house;
+        houseSelect.appendChild(opt);
+    }
+    houseSelect.value = npc.house || "格兰芬多"; 
+
+    // 🛠️ 动态补全年级/职位选项
+    let yearSelect = document.getElementById('npc-input-year');
+    let hasYearOption = Array.from(yearSelect.options).some(o => o.value === npc.year);
+    if (!hasYearOption && npc.year) {
+        let opt = document.createElement('option');
+        opt.value = npc.year; opt.innerText = npc.year;
+        yearSelect.appendChild(opt);
+    }
+    yearSelect.value = npc.year || "一年级";
+
     document.getElementById('npc-input-persona').value = npc.persona || "";
     document.getElementById('npc-input-impression').value = npc.impression || ""; 
     document.getElementById('npc-input-affinity').value = npc.affinity !== undefined ? npc.affinity : 50; 
